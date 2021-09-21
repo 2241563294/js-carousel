@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-轮播图</title>
+    <style type="text/css">
+    	*{
+    	    margin: 0;
+    	    padding: 0;
+    	}
+    	.banner-content{
+    	    width: 800px;
+    	    height: 400px;
+    	    margin: 50px auto;
+    	    overflow: hidden;
+    	    border: 2px solid #111;
+    	    position: relative;
+    	}
+    	.banner-content .banner-list{
+    	    width: 5600px;
+			position: absolute;
+			top: 0;
+			left: -800px;
+			overflow: hidden;
+    	}
+    	.banner-content .banner-list img{
+    	    float: left;
+    	}
+    	.banner-content .banner-a{
+    	    display: block;
+    	    text-decoration: none;
+    	    position: absolute;
+    	    top: 40%;
+    	    color: #fff;
+    	    font-size: 40px;
+    	    width: 40px;
+    	    height: 60px;
+    	    line-height: 55px;
+    	    text-align: center;
+    	    background-color: rgba(0, 0, 0, 0.3);
+    	    opacity: 0;
+    	    z-index: 1000;
+    	}
+    	.banner-content .banner-a:hover{
+    	    opacity: 1;
+    	    transition: .5s;
+    	}
+    	.banner-content .banner-prev{
+    	    left: 0;
+    	}
+    	.banner-content .banner-next{
+    	    right: 0;
+    	}
+    	.banner-content .banner-os{
+    	    position: absolute;
+    	    bottom: 5%;
+    	    left: 50%;
+			transform: translateX(-50%);
+    	    list-style: none;
+    	}
+    	.banner-content .banner-os li{
+    	    float: left;
+    	    width: 8px;
+    	    height: 8px;
+    	    border: 1px solid #fff;
+    	    border-radius: 50%;
+    	    margin-left: 10px;
+    	    cursor: pointer;
+    	}
+    	.cursor{
+    	    background-color: #fff;
+    	}
+    </style>
+</head>
+<body>
+    <div class="banner-content">
+        <a class="banner-prev banner-a" href="javascript:;">
+            <span><</span>
+        </a>
+        <a class="banner-next banner-a" href="javascript:;">
+            <span>&gt;</span>
+        </a>
+        <div class="banner-list">
+			<img src="./images/5.jpg" alt=""> 
+            <img src="./images/1.jpg" alt="">
+            <img src="./images/2.jpg" alt="">
+            <img src="./images/3.jpg" alt="">
+            <img src="./images/4.jpg" alt="">
+            <img src="./images/5.jpg" alt=""> 
+			<img src="./images/1.jpg" alt="">
+        </div>
+        <ul class="banner-os">
+            <li class="cursor"></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+	<script type="text/javascript">
+		var banner = document.querySelector(".banner-list"),
+			bos = document.querySelectorAll(".banner-os>li"),
+			bprev  = document.querySelector(".banner-prev"),
+			bnext = document.querySelector(".banner-next"),
+			blist = document.querySelectorAll(".banner-list img"),
+			allbanner = document.querySelector(".banner-content");
+		var index = 0,count = 1,timer;//显示图片为n+1
+		init();
+		function init(){
+			ooo(0);
+		}
+		bnext.onclick = function() {
+			ooo("++");
+			animte("++");	
+		}
+		bprev.onclick = function() {
+			ooo("--");
+			animte("--");
+		}
+		timer = setInterval(function() {
+			ooo("++");
+			animte("++");
+		},2000);
+		allbanner.onmouseover = function() {
+			clearInterval(timer);
+		}
+		allbanner.onmouseout = function() {
+			timer = setInterval(function() {
+				ooo("++");
+				animte("++");
+			},2000);
+		}
+		function animte(str) {
+			if(count === blist.length-1) {
+				count = 1; //拉到第二张
+				banner.style.left =  `-${blist[0].offsetWidth*count}px`;
+			}else if(count === 0) { 
+				count = blist.length-1; //拉到第6张
+				banner.style.left =  `-${blist[0].offsetWidth*count}px`;
+			}
+			if(str ==="++") {
+				count++;
+			}else if(str==="--") {
+				count--;
+			}
+			let target = -blist[0].offsetWidth*count;
+			move(target,banner,"left");
+		}
+		function ooo(str){
+			if(str==="++") {
+				++index;
+			}else if(str === "--") {
+				--index;
+			}
+			if(index === bos.length) {
+				index = 0;
+			}else if(index == -1) {
+				index = length-1;
+			}
+			for(var i = 0; i < bos.length;i++) {
+				bos[i].classList.remove("cursor");
+			}
+			console.log(index);
+			bos[index].classList.add("cursor");  
+		}
+		function move(target,yun,tl)
+				//目标位置offsetleft，和云 ，参数'top','left'
+				{
+					//计时器由云调用，每次调用就清除保证只有一个计时器
+					clearInterval(yun.timer);
+					yun.timer = setInterval(function()
+					{
+						var offsetTL = tl=="top"?yun.offsetTop:yun.offsetLeft;
+						//目标距离 / 云的位置
+						var speed = (target - offsetTL)/10;
+						speed = speed > 0 ? Math.ceil(speed) : Math.floor(speed);
+						if(offsetTL == target )
+						{
+							clearInterval(yun.timer);
+						}else if(tl =='top')
+							{
+								yun.style.top = yun.offsetTop +speed +'px';
+							}else
+								{
+									yun.style.left = yun.offsetLeft +speed +'px';
+								}
+					},15);
+		  }
+	</script>
+</body>
+</html>
