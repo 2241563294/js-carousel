@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>原生轮播图2</title>
+		<style type="text/css">
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			ul {
+				list-style: none;
+			}
+			/* 最外层盒子 */
+			.banner-content {
+				margin: 0 auto;
+				width: 1200px;
+				height: 400px;
+				display: flex;
+				justify-content: center;
+				margin-top: 50px;
+				position: relative;
+				overflow: hidden;
+			}
+			/* 选中列表 */
+			.banner-os {
+				position: absolute;
+				bottom: 10px;
+				left: 50%;
+				transform: translateX(-50%);
+				display: flex;
+				z-index: 3;
+			}
+			.banner-os li {
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				margin-right: 8px;
+				background-color: rgba(255,255,255,0.4);
+			}
+			li.cursor {
+				background-color: #FFFFFF;
+			}
+			/* 轮播图按钮 */
+			.banner-a {
+				box-sizing: border-box;
+				position: absolute;
+				text-decoration: none;
+				font-size: 20px;
+				font-weight: bold;
+				color: rgba(255,255,255,0.8);
+				padding: 0 10px;
+				background-color: rgba(0,0,0,0.3);
+				top: 50%;
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				transition: 0.3s;
+				z-index: 3;
+				opacity: 0;
+			}
+			.banner-content:hover .banner-a {
+				opacity: 1;
+			}
+			.banner-prev {
+				left: 7%;
+			}
+			.banner-next {
+				right: 7%;
+			}
+			/* 轮播图图片列表 */
+			.banner-list {
+				position: relative;
+				width: inherit;
+			}
+			.banner-list img{
+				position: absolute;
+				left: 50%;
+				transform: translateX(-50%);
+				opacity: 0;
+				top: 0;
+			}
+			.banner-list img {
+				border-radius: 10px;
+				transition: 0.8s;
+			}
+			/*  左中右样式 */
+			.banner-list .posl {
+				opacity: 1;
+				left: 0;
+				transform: translateX(0) scale(0.8);
+			}
+			.banner-list .pos {
+				opacity: 1;
+				z-index: 2;
+			}
+			.banner-list .posr{
+				opacity: 1;
+				transform: translateX(-25%) scale(0.8);
+			}
+		</style>
+	</head>
+	<body>
+			<div class="banner-content">
+			    <a class="banner-prev banner-a" href="javascript:;">
+			        <span>左</span>
+			    </a>
+			    <a class="banner-next banner-a" href="javascript:;">
+			        <span>右</span>
+			    </a>
+			    <div class="banner-list">
+			        <img class="pos" src="./images/1.jpg" alt="">
+			        <img class="posr" src="./images/2.jpg" alt="">
+			        <img src="./images/3.jpg" alt="">
+			        <img src="./images/4.jpg" alt="">
+			        <img class="posl" src="./images/5.jpg" alt="">
+			    </div>
+			    <ul class="banner-os">
+			        <li class="cursor"></li>
+			        <li></li>
+			        <li></li>
+			        <li></li>
+			        <li></li>
+			    </ul>
+			</div>
+			<script type="text/javascript">
+				let btn_left = document.querySelector('.banner-prev');
+				let btn_right = document.querySelector('.banner-next');
+				let box = document.querySelector('.banner-content');
+				let banner_list = document.querySelectorAll('.banner-list img');
+				let banner_os = document.querySelectorAll('.banner-os li');
+				let current = 0;
+				let timer = null;
+				let indexEnd = banner_list.length - 1; // 索引结束
+				// 点击向右
+				btn_right.onclick = goRight;
+				// 点击向左
+				btn_left.onclick = goLeft;
+				
+				// 定时轮播
+				function gogogo() {
+					clearInterval(timer);
+					timer = setInterval(() => goRight(), 5000);
+				}
+				
+				// 定时轮播监听
+				box.addEventListener('mouseout', gogogo);
+				box.addEventListener('mouseover', () => clearInterval(timer));
+				
+				// 向右
+				function goRight() {
+					// 左边显示
+					banner_list[current].setAttribute("class", '');
+					banner_list[current].classList.add('posl');
+					// 前左边隐藏
+					let list_current = current - 1 < 0 ? indexEnd : current - 1;
+					banner_list[list_current].setAttribute("class", '');
+					// 右边隐藏中间显示,右边显示
+					if (current + 1 > indexEnd) {
+						banner_list[0].setAttribute("class", '');
+						banner_list[0].classList.add('pos');
+						banner_list[0 + 1].setAttribute("class", '');
+						banner_list[0 + 1].classList.add('posr');
+					} else {
+						banner_list[current + 1].setAttribute("class", '');
+						banner_list[current + 1].classList.add('pos');
+						if (current + 2 > indexEnd) {
+							banner_list[0].setAttribute("class", '');
+							banner_list[0].classList.add('posr');
+						} else {
+							banner_list[current + 2].setAttribute("class", '');
+							banner_list[current + 2].classList.add('posr');
+						}
+					}
+					current = ++current > indexEnd ? 0 : current;
+					currentOs();
+				}
+				
+				// 向左
+				function goLeft() {
+					// 右边显示
+					banner_list[current].setAttribute("class", '');
+					banner_list[current].classList.add('posr');
+					// 前右边隐藏
+					let list_current = current + 1 > indexEnd ? 0 : current + 1;
+					banner_list[list_current].setAttribute("class", '');
+					// 左边隐藏中间显示,左边显示
+					if (current - 1 < 0) {
+						banner_list[indexEnd].setAttribute("class", '');
+						banner_list[indexEnd].classList.add('pos');
+						banner_list[indexEnd - 1].setAttribute("class", '');
+						banner_list[indexEnd - 1].classList.add('posl');
+					} else {
+						banner_list[current - 1].setAttribute("class", '');
+						banner_list[current - 1].classList.add('pos');
+						if (current -2 < 0) {
+							banner_list[indexEnd].setAttribute("class", '');
+							banner_list[indexEnd].classList.add('posl');
+						} else {
+							banner_list[current - 2].setAttribute("class", '');
+							banner_list[current - 2].classList.add('posl');
+						}
+					}
+					current = --current < 0 ? indexEnd : current;
+					currentOs();
+				}
+				
+				// 更换当前点选中样式
+				function currentOs() {
+					banner_os.forEach(item => item.setAttribute('class', ''));
+					banner_os[current].classList.add('cursor');
+				}
+				/**
+				 * 缺点：
+				 * 1.代码重复性高
+				 * 2.没有节流阀
+				 * 3.动画实现相对粗糙
+				 * 以上问题可尝试优化
+				 */
+			</script>
+	</body>
+</html>
